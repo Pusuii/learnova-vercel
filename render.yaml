@@ -1,0 +1,22 @@
+# Render Blueprint untuk Learnova (Flask + SQLite).
+# Persistent disk menjaga database dan file upload saat restart/deploy.
+services:
+  - type: web
+    name: learnova
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app --workers 1 --threads 4 --timeout 120
+    healthCheckPath: /health
+    disk:
+      name: learnova-data
+      mountPath: /var/data
+      sizeGB: 1
+    envVars:
+      - key: LEARNOVA_DATA_DIR
+        value: /var/data
+      - key: LEARNOVA_SECRET_KEY
+        generateValue: true
+      - key: LEARNOVA_SEED_DEMO
+        value: "1"
+      - key: FLASK_DEBUG
+        value: "0"
